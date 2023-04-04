@@ -3,19 +3,39 @@ package main
 import (
 	"auth/security"
 	"auth/user"
+	"auth/user/mysql"
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/codegangsta/negroni"
+	"github.com/codegangsta/negroni" //@todo replace with Chi
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 )
 
+// @todo get this variables from env or config
+const (
+	DB_USER     = "auth_user"
+	DB_PASSWORD = "auth_pwd"
+	DB_HOST     = "localhost"
+	DB_DATABASE = "auth_db"
+	DB_PORT     = "3306"
+)
+
 func main() {
-	uService := user.NewService()
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_DATABASE)
+	db, err := sql.Open("mysql", dataSourceName)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+	defer db.Close()
+	repo := mysql.NewUserMySQL(db)
+	uService := user.NewService(repo)
 	r := mux.NewRouter()
 	//handlers
 	n := negroni.New(
@@ -38,7 +58,7 @@ func main() {
 		Handler:      context.ClearHandler(http.DefaultServeMux),
 		ErrorLog:     logger,
 	}
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +75,7 @@ func userAuth(uService user.UseCase) http.Handler {
 			w.WriteHeader(http.StatusBadGateway)
 			return
 		}
-		err = uService.ValidateUser(param.Email, param.Password)
+		err = uService.ValidateUser(r.Context(), param.Email, param.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusForbidden)
 			return

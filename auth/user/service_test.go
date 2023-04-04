@@ -1,20 +1,22 @@
-package user_test
+package user
 
 import (
-	"auth/user"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestValidateUser(t *testing.T){
-	service := user.NewService()
-	t.Run("invalid user", func(t *testing.T) {
-		err := service.ValidateUser("eminetto@gmail.com", "invalid")
+func TestValidatePassword(t *testing.T) {
+	u := &User{
+		Email:    "eminetto@email.com",
+		Password: "8cb2237d0679ca88db6464eac60da96345513964",
+	}
+	t.Run("invalid password", func(t *testing.T) {
+		err := validatePassword(u, "invalid")
 		assert.NotNil(t, err)
-		assert.Equal(t, "Invalid user", err.Error())
+		assert.Equal(t, "invalid user", err.Error())
 	})
-	t.Run("valid user", func(t *testing.T) {
-		err := service.ValidateUser("eminetto@gmail.com", "1234567")
+	t.Run("valid password", func(t *testing.T) {
+		err := validatePassword(u, "12345")
 		assert.Nil(t, err)
 	})
 }

@@ -9,8 +9,8 @@ curl -X "POST" "http://localhost:8081/v1/auth" \
      -H 'Accept: application/json' \
      -H 'Content-Type: application/json' \
      -d $'{
-  "email": "eminetto@gmail.com",
-  "password": "1234567"
+  "email": "eminetto@email.com",
+  "password": "12345"
 }'
 
 ```
