@@ -5,16 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/eminetto/api-o11y/pkg/middleware"
+	"github.com/eminetto/api-o11y/votes/vote"
+	"github.com/eminetto/api-o11y/votes/vote/mysql"
+	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
-	"github.com/gorilla/context"
 	"log"
 	"net/http"
 	"os"
 	"time"
-	"votes/vote"
-	"votes/vote/mysql"
 )
 
 // @todo get this variables from env or config
@@ -24,6 +24,7 @@ const (
 	DB_HOST     = "localhost"
 	DB_DATABASE = "votes_db"
 	DB_PORT     = "3308"
+	PORT        = "8083"
 )
 
 func main() {
@@ -40,15 +41,15 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(chimiddleware.Logger)
 	r.Use(middleware.IsAuthenticated)
-	r.Post("/v1/vote", storeVote(fService))
+	r.Post("/v1/vote", storeVote(vService))
 
 	http.Handle("/", r)
 	logger := log.New(os.Stderr, "logger: ", log.Lshortfile)
 	srv := &http.Server{
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
-		Addr:         ":8083", //@TODO usar variável de ambiente
-		Handler:      context.ClearHandler(http.DefaultServeMux),
+		Addr:         ":" + PORT,
+		Handler:      http.DefaultServeMux,
 		ErrorLog:     logger,
 	}
 	err = srv.ListenAndServe()
@@ -65,7 +66,7 @@ func storeVote(vService vote.UseCase) http.HandlerFunc {
 			w.WriteHeader(http.StatusBadGateway)
 			return
 		}
-		v.Email = r.Header.Get("email")
+		v.Email = r.Context().Value("email").(string)
 		var result struct {
 			ID uuid.UUID `json:"id"`
 		}

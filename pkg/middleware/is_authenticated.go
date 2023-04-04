@@ -9,6 +9,9 @@ import (
 	"strings"
 )
 
+//@TODO get address from environment variables
+const URL = "http://localhost:8081/v1/validate-token"
+
 func IsAuthenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		errorMessage := "Erro na autenticação"
@@ -21,8 +24,8 @@ func IsAuthenticated(next http.Handler) http.Handler {
 		payload := `{
 			"token": "` + tokenString + `"
 		}`
-		//@TODO get address from environment variables
-		req, err := http.Post("http://localhost:8081/v1/validate-token", "text/plain", strings.NewReader(payload))
+
+		req, err := http.Post(URL, "text/plain", strings.NewReader(payload))
 		if err != nil {
 			respondWithError(rw, http.StatusUnauthorized, err.Error(), errorMessage)
 			return

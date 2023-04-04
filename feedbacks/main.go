@@ -7,10 +7,10 @@ import (
 	"github.com/eminetto/api-o11y/feedbacks/feedback"
 	"github.com/eminetto/api-o11y/feedbacks/feedback/mysql"
 	"github.com/eminetto/api-o11y/pkg/middleware"
+	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
-	"github.com/gorilla/context"
 	"log"
 	"net/http"
 	"os"
@@ -24,6 +24,7 @@ const (
 	DB_HOST     = "localhost"
 	DB_DATABASE = "feedbacks_db"
 	DB_PORT     = "3307"
+	PORT        = "8082"
 )
 
 func main() {
@@ -47,8 +48,8 @@ func main() {
 	srv := &http.Server{
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
-		Addr:         ":8082", //@TODO usar variável de ambiente
-		Handler:      context.ClearHandler(http.DefaultServeMux),
+		Addr:         ":" + PORT,
+		Handler:      http.DefaultServeMux,
 		ErrorLog:     logger,
 	}
 	err = srv.ListenAndServe()
@@ -65,7 +66,7 @@ func storeFeedback(fService feedback.UseCase) http.HandlerFunc {
 			w.WriteHeader(http.StatusBadGateway)
 			return
 		}
-		f.Email = r.Header.Get("email")
+		f.Email = r.Context().Value("email").(string)
 		var result struct {
 			ID uuid.UUID `json:"id"`
 		}

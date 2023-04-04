@@ -3,8 +3,8 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"github.com/eminetto/api-o11y/votes/vote"
 	"time"
-	"votes/vote"
 )
 
 // VoteMySQL mysql repo
@@ -32,7 +32,7 @@ func (r *VoteMySQL) Store(ctx context.Context, v *vote.Vote) error {
 		v.Email,
 		v.TalkName,
 		v.Score,
-		time.Now().Format("2006-01-02"),
+		time.Now().Format("2006-01-02 15:04:05"),
 	)
 	if err != nil {
 		return err

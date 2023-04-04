@@ -3,7 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"feedbacks/feedback"
+	"github.com/eminetto/api-o11y/feedbacks/feedback"
 	"time"
 )
 
@@ -32,7 +32,7 @@ func (r *FeedbackMySQL) Store(ctx context.Context, f *feedback.Feedback) error {
 		f.Email,
 		f.Title,
 		f.Body,
-		time.Now().Format("2006-01-02"),
+		time.Now().Format("2006-01-02 15:04:05"),
 	)
 	if err != nil {
 		return err

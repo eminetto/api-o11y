@@ -25,6 +25,7 @@ const (
 	DB_HOST     = "localhost"
 	DB_DATABASE = "auth_db"
 	DB_PORT     = "3306"
+	PORT        = "8081"
 )
 
 func main() {
@@ -47,7 +48,7 @@ func main() {
 	srv := &http.Server{
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
-		Addr:         ":8081", //@TODO usar variável de ambiente
+		Addr:         ":" + PORT,
 		Handler:      context.ClearHandler(http.DefaultServeMux),
 		ErrorLog:     logger,
 	}
