@@ -3,11 +3,10 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"feedbacks/feedback"
-	"feedbacks/feedback/mysql"
 	"fmt"
+	"github.com/eminetto/api-o11y/feedbacks/feedback"
+	"github.com/eminetto/api-o11y/feedbacks/feedback/mysql"
 	"github.com/eminetto/api-o11y/pkg/middleware"
-	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
@@ -43,16 +42,6 @@ func main() {
 	r.Use(middleware.IsAuthenticated)
 	r.Post("/v1/feedback", storeFeedback(fService))
 
-	/*r := mux.NewRouter()
-	//handlers
-	n := negroni.New(
-		negroni.NewLogger(),
-	)
-	r.Handle("/v1/feedback", n.With(
-		negroni.HandlerFunc(middleware.IsAuthenticated()),
-		negroni.Wrap(storeFeedback(fService)),
-	)).Methods("POST", "OPTIONS")
-	*/
 	http.Handle("/", r)
 	logger := log.New(os.Stderr, "logger: ", log.Lshortfile)
 	srv := &http.Server{

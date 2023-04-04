@@ -4,12 +4,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/codegangsta/negroni"
-	"github.com/eminetto/talk-microservices-go/pkg/middleware"
+	"github.com/eminetto/api-o11y/pkg/middleware"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"github.com/gorilla/context"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
@@ -37,15 +36,11 @@ func main() {
 	repo := mysql.NewVoteMySQL(db)
 
 	vService := vote.NewService(repo)
-	r := mux.NewRouter()
-	//handlers
-	n := negroni.New(
-		negroni.NewLogger(),
-	)
-	r.Handle("/v1/vote", n.With(
-		negroni.HandlerFunc(middleware.IsAuthenticated()),
-		negroni.Wrap(storeVote(vService)),
-	)).Methods("POST", "OPTIONS")
+
+	r := chi.NewRouter()
+	r.Use(chimiddleware.Logger)
+	r.Use(middleware.IsAuthenticated)
+	r.Post("/v1/vote", storeVote(fService))
 
 	http.Handle("/", r)
 	logger := log.New(os.Stderr, "logger: ", log.Lshortfile)
@@ -62,8 +57,8 @@ func main() {
 	}
 }
 
-func storeVote(vService vote.UseCase) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func storeVote(vService vote.UseCase) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var v vote.Vote
 		err := json.NewDecoder(r.Body).Decode(&v)
 		if err != nil {
@@ -84,5 +79,5 @@ func storeVote(vService vote.UseCase) http.Handler {
 			return
 		}
 		return
-	})
+	}
 }
