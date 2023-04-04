@@ -1,10 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"feedbacks/feedback"
+	"feedbacks/feedback/mysql"
+	"fmt"
 	"github.com/codegangsta/negroni"
 	"github.com/eminetto/talk-microservices-go/pkg/middleware"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
@@ -14,8 +18,25 @@ import (
 	"time"
 )
 
+// @todo get this variables from env or config
+const (
+	DB_USER     = "feedbacks_user"
+	DB_PASSWORD = "feedbacks_pwd"
+	DB_HOST     = "localhost"
+	DB_DATABASE = "feedbacks_db"
+	DB_PORT     = "3307"
+)
+
 func main() {
-	fService := feedback.NewService()
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_DATABASE)
+	db, err := sql.Open("mysql", dataSourceName)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+	defer db.Close()
+	repo := mysql.NewUserMySQL(db)
+
+	fService := feedback.NewService(repo)
 	r := mux.NewRouter()
 	//handlers
 	n := negroni.New(
@@ -26,17 +47,16 @@ func main() {
 		negroni.Wrap(storeFeedback(fService)),
 	)).Methods("POST", "OPTIONS")
 
-
 	http.Handle("/", r)
 	logger := log.New(os.Stderr, "logger: ", log.Lshortfile)
 	srv := &http.Server{
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
-		Addr:         ":8082",//@TODO usar variável de ambiente
+		Addr:         ":8082", //@TODO usar variável de ambiente
 		Handler:      context.ClearHandler(http.DefaultServeMux),
 		ErrorLog:     logger,
 	}
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}
@@ -54,8 +74,8 @@ func storeFeedback(fService feedback.UseCase) http.Handler {
 		var result struct {
 			ID uuid.UUID `json:"id"`
 		}
-		result.ID, err = fService.Store(f)
-		if err != nil{
+		result.ID, err = fService.Store(r.Context(), &f)
+		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

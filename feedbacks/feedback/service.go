@@ -1,17 +1,28 @@
 package feedback
 
-import "github.com/google/uuid"
+import (
+	"context"
+	"github.com/google/uuid"
+)
 
 type UseCase interface {
-	Store(f Feedback) (uuid.UUID,error)
+	Store(ctx context.Context, f *Feedback) (uuid.UUID, error)
 }
 
-type Service struct {}
-
-func NewService() *Service {
-	return &Service{}
+type Service struct {
+	repo Repository
 }
-func (s *Service) Store(f Feedback) (uuid.UUID,error) {
-	//@TODO create store rules, using databases or something else
-	return uuid.New(),nil
+
+func NewService(repo Repository) *Service {
+	return &Service{
+		repo: repo,
+	}
+}
+func (s *Service) Store(ctx context.Context, f *Feedback) (uuid.UUID, error) {
+	f.ID = uuid.New()
+	err := s.repo.Store(ctx, f)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	return f.ID, nil
 }
