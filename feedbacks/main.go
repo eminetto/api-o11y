@@ -6,12 +6,12 @@ import (
 	"feedbacks/feedback"
 	"feedbacks/feedback/mysql"
 	"fmt"
-	"github.com/codegangsta/negroni"
-	"github.com/eminetto/talk-microservices-go/pkg/middleware"
+	"github.com/eminetto/api-o11y/pkg/middleware"
+	"github.com/go-chi/chi/v5"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"github.com/gorilla/context"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
@@ -37,7 +37,13 @@ func main() {
 	repo := mysql.NewUserMySQL(db)
 
 	fService := feedback.NewService(repo)
-	r := mux.NewRouter()
+
+	r := chi.NewRouter()
+	r.Use(chimiddleware.Logger)
+	r.Use(middleware.IsAuthenticated)
+	r.Post("/v1/feedback", storeFeedback(fService))
+
+	/*r := mux.NewRouter()
 	//handlers
 	n := negroni.New(
 		negroni.NewLogger(),
@@ -46,7 +52,7 @@ func main() {
 		negroni.HandlerFunc(middleware.IsAuthenticated()),
 		negroni.Wrap(storeFeedback(fService)),
 	)).Methods("POST", "OPTIONS")
-
+	*/
 	http.Handle("/", r)
 	logger := log.New(os.Stderr, "logger: ", log.Lshortfile)
 	srv := &http.Server{
@@ -62,8 +68,8 @@ func main() {
 	}
 }
 
-func storeFeedback(fService feedback.UseCase) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func storeFeedback(fService feedback.UseCase) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var f feedback.Feedback
 		err := json.NewDecoder(r.Body).Decode(&f)
 		if err != nil {
@@ -84,5 +90,5 @@ func storeFeedback(fService feedback.UseCase) http.Handler {
 			return
 		}
 		return
-	})
+	}
 }

@@ -1,17 +1,16 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/codegangsta/negroni"
 )
 
-func IsAuthenticated() negroni.HandlerFunc {
-	return func(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+func IsAuthenticated(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		errorMessage := "Erro na autenticação"
 		tokenString := r.Header.Get("Authorization")
 		if tokenString == "" {
@@ -38,13 +37,13 @@ func IsAuthenticated() negroni.HandlerFunc {
 			respondWithError(rw, http.StatusUnauthorized, err.Error(), errorMessage)
 			return
 		}
-		r.Header.Add("email", res.Email)
 
-		next(rw, r)
-	}
+		ctx := context.WithValue(r.Context(), "email", res.Email)
+		next.ServeHTTP(rw, r.WithContext(ctx))
+	})
 }
 
-//RespondWithError return a http error
+// RespondWithError return a http error
 func respondWithError(w http.ResponseWriter, code int, e string, message string) {
 	respondWithJSON(w, code, map[string]string{"code": strconv.Itoa(code), "error": e, "message": message})
 }

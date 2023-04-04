@@ -12,10 +12,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/codegangsta/negroni" //@todo replace with Chi
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/context"
-	"github.com/gorilla/mux"
 )
 
 // @todo get this variables from env or config
@@ -36,18 +36,11 @@ func main() {
 	defer db.Close()
 	repo := mysql.NewUserMySQL(db)
 	uService := user.NewService(repo)
-	r := mux.NewRouter()
-	//handlers
-	n := negroni.New(
-		negroni.NewLogger(),
-	)
-	r.Handle("/v1/auth", n.With(
-		negroni.Wrap(userAuth(uService)),
-	)).Methods("POST", "OPTIONS")
 
-	r.Handle("/v1/validate-token", n.With(
-		negroni.Wrap(validateToken()),
-	)).Methods("POST", "OPTIONS")
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Post("/v1/auth", userAuth(uService))
+	r.Post("/v1/validate-token", validateToken())
 
 	http.Handle("/", r)
 	logger := log.New(os.Stderr, "logger: ", log.Lshortfile)
@@ -64,8 +57,8 @@ func main() {
 	}
 }
 
-func userAuth(uService user.UseCase) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func userAuth(uService user.UseCase) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var param struct {
 			Email    string `json:"email"`
 			Password string `json:"password"`
@@ -94,11 +87,11 @@ func userAuth(uService user.UseCase) http.Handler {
 			return
 		}
 		return
-	})
+	}
 }
 
-func validateToken() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func validateToken() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var param struct {
 			Token string `json:"token"`
 		}
@@ -128,5 +121,5 @@ func validateToken() http.Handler {
 			return
 		}
 		return
-	})
+	}
 }
