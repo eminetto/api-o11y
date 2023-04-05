@@ -15,7 +15,7 @@ services:
     volumes:
       - ./auth/ops/db/init.sql:/data/application/init.sql
     environment:
-      MYSQL_ROOT_PASSWORD: auth_user
+      MYSQL_ROOT_PASSWORD: auth_pwd
       MYSQL_DATABASE: auth_db
       MYSQL_USER: auth_user
       MYSQL_PASSWORD: auth_pwd
@@ -28,7 +28,7 @@ services:
     volumes:
       - ./feedbacks/ops/db/init.sql:/data/application/init.sql
     environment:
-      MYSQL_ROOT_PASSWORD: feedbacks_user
+      MYSQL_ROOT_PASSWORD: feedbacks_pwd
       MYSQL_DATABASE: feedbacks_db
       MYSQL_USER: feedbacks_user
       MYSQL_PASSWORD: feedbacks_pwd
@@ -41,7 +41,7 @@ services:
     volumes:
       - ./votes/ops/db/init.sql:/data/application/init.sql
     environment:
-      MYSQL_ROOT_PASSWORD: votes_user
+      MYSQL_ROOT_PASSWORD: votes_pwd
       MYSQL_DATABASE: votes_db
       MYSQL_USER: votes_user
       MYSQL_PASSWORD: votes_pwd
@@ -75,7 +75,7 @@ services:
       DB_PASSWORD: "feedbacks_pwd"
       DB_HOST: "feedbacks_mysql"
       DB_DATABASE: "feedbacks_db"
-      DB_PORT: "3307"
+      DB_PORT: "3306"
       PORT: "8082"
       AUTH_URL: "http://auth:8081"
     ports:
@@ -93,7 +93,7 @@ services:
       DB_PASSWORD: "votes_pwd"
       DB_HOST: "votes_mysql"
       DB_DATABASE: "votes_db"
-      DB_PORT: "3308"
+      DB_PORT: "3306"
       PORT: "8083"
       AUTH_URL: "http://auth:8081"
     ports:

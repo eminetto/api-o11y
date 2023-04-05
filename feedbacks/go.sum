@@ -1,2 +1,4 @@
+github.com/eminetto/api-o11y v0.0.2 h1:EWgEuOQnGWkpkRjJa7uhtnK+K8QOtrk3zxemYgOBFnM=
+github.com/eminetto/api-o11y v0.0.2/go.mod h1:rwcGFE85b639qzTaL13QJR+n5XAmVdKBub6cbzQxsjI=
 github.com/go-sql-driver/mysql v1.7.0 h1:ueSltNNllEqE3qcWBTD0iQd3IpL/6U+mJxLkazJ7YPc=
 github.com/go-sql-driver/mysql v1.7.0/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
