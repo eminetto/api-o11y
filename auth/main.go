@@ -1,12 +1,12 @@
 package main
 
 import (
-	"auth/security"
-	"auth/user"
-	"auth/user/mysql"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/eminetto/api-o11y/auth/security"
+	"github.com/eminetto/api-o11y/auth/user"
+	"github.com/eminetto/api-o11y/auth/user/mysql"
 	"log"
 	"net/http"
 	"os"

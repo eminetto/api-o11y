@@ -1,9 +1,9 @@
 package mysql
 
 import (
-	"auth/user"
 	"context"
 	"database/sql"
+	"github.com/eminetto/api-o11y/auth/user"
 )
 
 // UserMySQL mysql repo

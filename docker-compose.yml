@@ -1,4 +1,9 @@
 version: "3"
+x-default-logging: &logging
+   driver: "json-file"
+   options:
+     max-size: "5m"
+     max-file: "2"
 services:
   mysql-auth:
     image: mariadb:10.5.8
@@ -42,6 +47,116 @@ services:
       - "3308:3306"
     container_name: votes_mysql
     network_mode: "bridge"
+  auth:
+    image: auth
+    build:
+      context: ./
+      dockerfile: ./auth/Dockerfile
+#    environment:
+#      MYSQL_ROOT_PASSWORD: votes_user
+#      MYSQL_DATABASE: votes_db
+#      MYSQL_USER: votes_user
+#      MYSQL_PASSWORD: votes_pwd
+    ports:
+      - "8081:8081"
+    container_name: auth
+    network_mode: "bridge"
+
+
+
+
+  # ********************
+  # Telemetry Components
+  # ********************
+  # Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one
+    container_name: jaeger
+    network_mode: "bridge"
+    command:
+      - "--memory.max-traces"
+      - "10000"
+      - "--query.base-path"
+      - "/jaeger/ui"
+      - "--prometheus.server-url"
+      - "http://${PROMETHEUS_ADDR}"
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    restart: unless-stopped
+    ports:
+      - "${JAEGER_SERVICE_PORT}"                    # Jaeger UI
+      - "4317"                           # OTLP gRPC default port
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - METRICS_STORAGE_TYPE=prometheus
+    logging: *logging
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:9.1.0
+    container_name: grafana
+    network_mode: "bridge"
+    deploy:
+      resources:
+        limits:
+          memory: 75M
+    volumes:
+      - ./ops/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./ops/grafana/provisioning/:/etc/grafana/provisioning/
+    ports:
+      - "${GRAFANA_SERVICE_PORT}"
+    logging: *logging
+
+  # OpenTelemetry Collector
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:0.74.0
+    container_name: otel-col
+    network_mode: "bridge"
+    deploy:
+      resources:
+        limits:
+          memory: 125M
+    restart: unless-stopped
+    command: [ "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml" ]
+    volumes:
+      - ./ops/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
+      - ./ops/otelcollector/otelcol-config-extras.yml:/etc/otelcol-config-extras.yml
+    ports:
+      - "4317"          # OTLP over gRPC receiver
+      - "4318:4318"     # OTLP over HTTP receiver
+      - "9464"          # Prometheus exporter
+      - "8888"          # metrics endpoint
+    depends_on:
+      - jaeger
+    logging: *logging
+
+  # Prometheus
+  prometheus:
+    image: quay.io/prometheus/prometheus:v2.34.0
+    container_name: prometheus
+    network_mode: "bridge"
+    command:
+      - --web.console.templates=/etc/prometheus/consoles
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --storage.tsdb.retention.time=1h
+      - --config.file=/etc/prometheus/prometheus-config.yaml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+      - --web.route-prefix=/
+      - --enable-feature=exemplar-storage
+    volumes:
+      - ./ops/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    ports:
+      - "${PROMETHEUS_SERVICE_PORT}:${PROMETHEUS_SERVICE_PORT}"
+    logging: *logging
+
+
 #  grafana:
 #    image: grafana/grafana
 #    ports:
