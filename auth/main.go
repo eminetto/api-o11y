@@ -18,18 +18,8 @@ import (
 	"github.com/gorilla/context"
 )
 
-// @todo get this variables from env or config
-const (
-	DB_USER     = "auth_user"
-	DB_PASSWORD = "auth_pwd"
-	DB_HOST     = "localhost"
-	DB_DATABASE = "auth_db"
-	DB_PORT     = "3306"
-	PORT        = "8081"
-)
-
 func main() {
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_DATABASE)
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE"))
 	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		log.Panic(err.Error())
@@ -48,7 +38,7 @@ func main() {
 	srv := &http.Server{
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
-		Addr:         ":" + PORT,
+		Addr:         ":" + os.Getenv("PORT"),
 		Handler:      context.ClearHandler(http.DefaultServeMux),
 		ErrorLog:     logger,
 	}

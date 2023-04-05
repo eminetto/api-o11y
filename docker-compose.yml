@@ -4,6 +4,10 @@ x-default-logging: &logging
    options:
      max-size: "5m"
      max-file: "2"
+networks:
+  default:
+    name: api-o11y
+    driver: bridge
 services:
   mysql-auth:
     image: mariadb:10.5.8
@@ -18,7 +22,6 @@ services:
     ports:
       - "3306:3306"
     container_name: auth_mysql
-    network_mode: "bridge"
   mysql-feedbacks:
     image: mariadb:10.5.8
     command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
@@ -32,7 +35,6 @@ services:
     ports:
       - "3307:3306"
     container_name: feedbacks_mysql
-    network_mode: "bridge"
   mysql-votes:
     image: mariadb:10.5.8
     command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
@@ -46,24 +48,59 @@ services:
     ports:
       - "3308:3306"
     container_name: votes_mysql
-    network_mode: "bridge"
   auth:
     image: auth
     build:
       context: ./
       dockerfile: ./auth/Dockerfile
-#    environment:
-#      MYSQL_ROOT_PASSWORD: votes_user
-#      MYSQL_DATABASE: votes_db
-#      MYSQL_USER: votes_user
-#      MYSQL_PASSWORD: votes_pwd
+    environment:
+      DB_USER: "auth_user"
+      DB_PASSWORD: "auth_pwd"
+      DB_HOST: "auth_mysql"
+      DB_DATABASE: "auth_db"
+      DB_PORT: "3306"
+      PORT: "8081"
     ports:
       - "8081:8081"
     container_name: auth
-    network_mode: "bridge"
-
-
-
+    depends_on:
+      - mysql-auth
+  feedbacks:
+    image: feedbacks
+    build:
+      context: ./
+      dockerfile: ./feedbacks/Dockerfile
+    environment:
+      DB_USER: "feedbacks_user"
+      DB_PASSWORD: "feedbacks_pwd"
+      DB_HOST: "feedbacks_mysql"
+      DB_DATABASE: "feedbacks_db"
+      DB_PORT: "3307"
+      PORT: "8082"
+      AUTH_URL: "http://auth:8081"
+    ports:
+      - "8082:8082"
+    container_name: feedbacks
+    depends_on:
+      - mysql-feedbacks
+  votes:
+    image: votes
+    build:
+      context: ./
+      dockerfile: ./votes/Dockerfile
+    environment:
+      DB_USER: "votes_user"
+      DB_PASSWORD: "votes_pwd"
+      DB_HOST: "votes_mysql"
+      DB_DATABASE: "votes_db"
+      DB_PORT: "3308"
+      PORT: "8083"
+      AUTH_URL: "http://auth:8081"
+    ports:
+      - "8083:8083"
+    container_name: votes
+    depends_on:
+      - mysql-votes
 
   # ********************
   # Telemetry Components
@@ -72,7 +109,6 @@ services:
   jaeger:
     image: jaegertracing/all-in-one
     container_name: jaeger
-    network_mode: "bridge"
     command:
       - "--memory.max-traces"
       - "10000"
@@ -97,7 +133,6 @@ services:
   grafana:
     image: grafana/grafana:9.1.0
     container_name: grafana
-    network_mode: "bridge"
     deploy:
       resources:
         limits:
@@ -113,7 +148,6 @@ services:
   otelcol:
     image: otel/opentelemetry-collector-contrib:0.74.0
     container_name: otel-col
-    network_mode: "bridge"
     deploy:
       resources:
         limits:
@@ -136,7 +170,6 @@ services:
   prometheus:
     image: quay.io/prometheus/prometheus:v2.34.0
     container_name: prometheus
-    network_mode: "bridge"
     command:
       - --web.console.templates=/etc/prometheus/consoles
       - --web.console.libraries=/etc/prometheus/console_libraries
@@ -156,30 +189,3 @@ services:
       - "${PROMETHEUS_SERVICE_PORT}:${PROMETHEUS_SERVICE_PORT}"
     logging: *logging
 
-
-#  grafana:
-#    image: grafana/grafana
-#    ports:
-#      - "3000:3000"
-#    container_name: clean-architecture-go-v2-grafana
-#    network_mode: "bridge"
-#    depends_on:
-#      - prometheus
-#      - prometheus-pushgateway
-#  prometheus:
-#    image: prom/prometheus
-#    ports:
-#      - 9090:9090
-#    command:
-#      - --config.file=/etc/prometheus/prometheus.yml
-#    volumes:
-#      - ./ops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-#    container_name: clean-architecture-go-v2-prometheus
-#    network_mode: "bridge"
-#  prometheus-pushgateway:
-#    image: prom/pushgateway
-#    container_name: clean-architecture-go-v2-pushgateway
-#    expose:
-#      - 9091
-#    ports:
-#      - "9091:9091"
