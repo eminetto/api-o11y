@@ -1,21 +1,17 @@
-FROM golang:1.19.2-alpine AS builder
-#RUN apk add build-base
+FROM golang:1.20-alpine AS builder
 
-WORKDIR /app/
+WORKDIR /src
 
 # Restore dependencies
-COPY * /app/
+COPY auth/ .
 
-RUN ls -la /
-RUN go mod download
+RUN go mod tidy
 
 # Build executable
-RUN go build -o /app/auth ./
+RUN go build -o /src/auth ./
 
 FROM scratch
-
-WORKDIR /app/
-
-COPY --from=builder /app/auth ./
+WORKDIR /src
+COPY --from=builder /src/auth ./
 EXPOSE 8081
-CMD ["/app/auth"]
+CMD ["/src/auth"]
