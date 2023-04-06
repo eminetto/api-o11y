@@ -8,6 +8,7 @@ import (
 	"github.com/eminetto/api-o11y/auth/user"
 	"github.com/eminetto/api-o11y/auth/user/mysql"
 	"github.com/go-chi/httplog"
+	"github.com/go-chi/telemetry"
 	"net/http"
 	"os"
 	"time"
@@ -16,6 +17,22 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/context"
 )
+
+var (
+	AppMetrics = &MyAppMetrics{telemetry.NewNamespace("auth")}
+)
+
+type MyAppMetrics struct {
+	*telemetry.Namespace
+}
+
+func (m *MyAppMetrics) RecordMyAppHit() {
+	m.RecordHit("my_app_hit", nil)
+}
+
+func (m *MyAppMetrics) RecordAppGuage(value float64) {
+	m.RecordGauge("my_app_gauge", nil, value)
+}
 
 func main() {
 	// Logger
@@ -34,6 +51,11 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(httplog.RequestLogger(logger))
+
+	r.Use(telemetry.Collector(telemetry.Config{
+		AllowAny: true,
+	}, []string{"/v1"})) // path prefix filters basically records generic http request metrics
+
 	r.Post("/v1/auth", userAuth(uService))
 	r.Post("/v1/validate-token", validateToken())
 

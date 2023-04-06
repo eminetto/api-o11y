@@ -25,3 +25,8 @@ scrape_configs:
   static_configs:
   - targets:
     - 'otelcol:8888'
+- job_name: auth
+  scrape_interval: 10s
+  static_configs:
+  - targets:
+    - 'auth:8081'

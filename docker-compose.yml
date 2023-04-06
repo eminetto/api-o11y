@@ -130,19 +130,19 @@ services:
     logging: *logging
 
   # Grafana
-  grafana:
-    image: grafana/grafana:9.1.0
-    container_name: grafana
-    deploy:
-      resources:
-        limits:
-          memory: 75M
-    volumes:
-      - ./ops/grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./ops/grafana/provisioning/:/etc/grafana/provisioning/
-    ports:
-      - "${GRAFANA_SERVICE_PORT}"
-    logging: *logging
+#  grafana:
+#    image: grafana/grafana:9.1.0
+#    container_name: grafana
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 75M
+#    volumes:
+#      - ./ops/grafana/grafana.ini:/etc/grafana/grafana.ini
+#      - ./ops/grafana/provisioning/:/etc/grafana/provisioning/
+#    ports:
+#      - "3000:3000"
+#    logging: *logging
 
   # OpenTelemetry Collector
   otelcol:
@@ -167,25 +167,41 @@ services:
     logging: *logging
 
   # Prometheus
-  prometheus:
-    image: quay.io/prometheus/prometheus:v2.34.0
-    container_name: prometheus
-    command:
-      - --web.console.templates=/etc/prometheus/consoles
-      - --web.console.libraries=/etc/prometheus/console_libraries
-      - --storage.tsdb.retention.time=1h
-      - --config.file=/etc/prometheus/prometheus-config.yaml
-      - --storage.tsdb.path=/prometheus
-      - --web.enable-lifecycle
-      - --web.route-prefix=/
-      - --enable-feature=exemplar-storage
-    volumes:
-      - ./ops/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml
-    deploy:
-      resources:
-        limits:
-          memory: 300M
-    ports:
-      - "${PROMETHEUS_SERVICE_PORT}:${PROMETHEUS_SERVICE_PORT}"
-    logging: *logging
+#  prometheus:
+#    image: quay.io/prometheus/prometheus:v2.34.0
+#    container_name: prometheus
+#    command:
+#      - --web.console.templates=/etc/prometheus/consoles
+#      - --web.console.libraries=/etc/prometheus/console_libraries
+#      - --storage.tsdb.retention.time=1h
+#      - --config.file=/etc/prometheus/prometheus-config.yaml
+#      - --storage.tsdb.path=/prometheus
+#      - --web.enable-lifecycle
+#      - --web.route-prefix=/
+#      - --enable-feature=exemplar-storage
+#    volumes:
+#      - ./ops/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 300M
+#    ports:
+#      - "${PROMETHEUS_SERVICE_PORT}:${PROMETHEUS_SERVICE_PORT}"
+#    logging: *logging
 
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    container_name: grafana
+    depends_on:
+      - prometheus
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./ops/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus.yml
+    container_name: prometheus
