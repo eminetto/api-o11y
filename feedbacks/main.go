@@ -7,6 +7,7 @@ import (
 	"github.com/eminetto/api-o11y/feedbacks/feedback"
 	"github.com/eminetto/api-o11y/feedbacks/feedback/mysql"
 	"github.com/eminetto/api-o11y/internal/middleware"
+	"github.com/eminetto/api-o11y/internal/telemetry"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 	_ "github.com/go-sql-driver/mysql"
@@ -52,8 +53,18 @@ func main() {
 func storeFeedback(fService feedback.UseCase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		oplog := httplog.LogEntry(r.Context())
+		ctx := r.Context()
+		otel, err := telemetry.New(ctx, "feedback")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			oplog.Error().Msg(err.Error())
+			return
+		}
+		defer otel.Shutdown(ctx)
+		ctx, span := otel.Start(ctx, "store")
+		defer span.End()
 		var f feedback.Feedback
-		err := json.NewDecoder(r.Body).Decode(&f)
+		err = json.NewDecoder(r.Body).Decode(&f)
 		if err != nil {
 			w.WriteHeader(http.StatusBadGateway)
 			oplog.Error().Msg(err.Error())
