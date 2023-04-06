@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/eminetto/api-o11y/feedbacks/feedback"
 	"github.com/eminetto/api-o11y/feedbacks/feedback/mysql"
-	"github.com/eminetto/api-o11y/pkg/middleware"
+	"github.com/eminetto/api-o11y/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
 	_ "github.com/go-sql-driver/mysql"

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/eminetto/api-o11y/pkg/middleware"
+	"github.com/eminetto/api-o11y/internal/middleware"
 	"github.com/eminetto/api-o11y/votes/vote"
 	"github.com/eminetto/api-o11y/votes/vote/mysql"
 	"github.com/go-chi/chi/v5"
