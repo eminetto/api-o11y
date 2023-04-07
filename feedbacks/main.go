@@ -42,7 +42,7 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(httplog.RequestLogger(logger))
-	r.Use(middleware.IsAuthenticated)
+	r.Use(middleware.IsAuthenticated(ctx, otel))
 	r.Post("/v1/feedback", storeFeedback(ctx, fService, otel))
 
 	http.Handle("/", r)
