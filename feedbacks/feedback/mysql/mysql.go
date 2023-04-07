@@ -21,7 +21,12 @@ func NewUserMySQL(db *sql.DB) *FeedbackMySQL {
 
 // Store a feedback
 func (r *FeedbackMySQL) Store(ctx context.Context, f *feedback.Feedback) error {
-	stmt, err := r.db.Prepare(`
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Commit()
+	stmt, err := tx.Prepare(`
 		insert into feedback (id, email, title, body, created_at) 
 		values(?,?,?,?,?)`)
 	if err != nil {
@@ -35,11 +40,10 @@ func (r *FeedbackMySQL) Store(ctx context.Context, f *feedback.Feedback) error {
 		time.Now().Format("2006-01-02 15:04:05"),
 	)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
-	err = stmt.Close()
-	if err != nil {
-		return err
-	}
+	defer stmt.Close()
+
 	return nil
 }

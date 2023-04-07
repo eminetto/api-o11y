@@ -12,15 +12,6 @@ import (
 	"os"
 )
 
-type Telemetry interface {
-	Start(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, Span)
-	Shutdown(ctx context.Context)
-}
-
-type Span interface {
-	trace.Span
-}
-
 type OTel struct {
 	provider *sdktrace.TracerProvider
 	tracer   trace.Tracer

@@ -5,6 +5,8 @@ github.com/eminetto/api-o11y v0.0.3 h1:CnGr0YDVss/VB2/ftvtn9Cegb3nqUDqmfQYdsmci2
 github.com/eminetto/api-o11y v0.0.3/go.mod h1:rwcGFE85b639qzTaL13QJR+n5XAmVdKBub6cbzQxsjI=
 github.com/eminetto/api-o11y v0.0.4 h1:x+AeLWVSPBrFFlkvp/AV0IMxWBMcKHw0aHZoz9TfaTk=
 github.com/eminetto/api-o11y v0.0.4/go.mod h1:rwcGFE85b639qzTaL13QJR+n5XAmVdKBub6cbzQxsjI=
+github.com/eminetto/api-o11y v0.0.5 h1:lX06Px3mZTx0z9o/XH6BnGOjyGy3cs6eqgFajn7v4Is=
+github.com/eminetto/api-o11y v0.0.5/go.mod h1:hPKUkRKkl/cuHHsA0mZ6rdJny7o5KiG9dteD8EuFr6g=
 github.com/go-chi/chi/v5 v5.0.7/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
 github.com/go-chi/chi/v5 v5.0.8 h1:lD+NLqFcAi1ovnVZpsnObHGW4xb4J8lNmoYVfECH1Y0=
 github.com/go-chi/chi/v5 v5.0.8/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
@@ -23,3 +25,4 @@ golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 h1:0A+M6Uqn+Eje4kHMK80dtF3JCXC4ykBgQG4Fe06QRhQ=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=

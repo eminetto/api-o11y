@@ -61,7 +61,6 @@ func storeFeedback(fService feedback.UseCase) http.HandlerFunc {
 			return
 		}
 		defer otel.Shutdown(ctx)
-		fmt.Println(otel)
 		ctx, span := otel.Start(ctx, "store")
 		defer span.End()
 		var f feedback.Feedback
@@ -71,11 +70,11 @@ func storeFeedback(fService feedback.UseCase) http.HandlerFunc {
 			oplog.Error().Msg(err.Error())
 			return
 		}
-		f.Email = r.Context().Value("email").(string)
+		f.Email = ctx.Value("email").(string)
 		var result struct {
 			ID uuid.UUID `json:"id"`
 		}
-		result.ID, err = fService.Store(r.Context(), &f)
+		result.ID, err = fService.Store(ctx, &f)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			oplog.Error().Msg(err.Error())
