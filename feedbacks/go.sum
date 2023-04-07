@@ -9,6 +9,8 @@ github.com/eminetto/api-o11y v0.0.5 h1:lX06Px3mZTx0z9o/XH6BnGOjyGy3cs6eqgFajn7v4
 github.com/eminetto/api-o11y v0.0.5/go.mod h1:hPKUkRKkl/cuHHsA0mZ6rdJny7o5KiG9dteD8EuFr6g=
 github.com/eminetto/api-o11y v0.0.6 h1:PLQa2GsP592Cz7e1Sl6wZnYcoVCP/hdMRTVJTIXQHuo=
 github.com/eminetto/api-o11y v0.0.6/go.mod h1:hPKUkRKkl/cuHHsA0mZ6rdJny7o5KiG9dteD8EuFr6g=
+github.com/eminetto/api-o11y v0.0.7 h1:zLGuomDWazxLEXhBp4WrQTuffMzQTPkW8NWFX68eNII=
+github.com/eminetto/api-o11y v0.0.7/go.mod h1:hPKUkRKkl/cuHHsA0mZ6rdJny7o5KiG9dteD8EuFr6g=
 github.com/go-chi/chi/v5 v5.0.7/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
 github.com/go-chi/chi/v5 v5.0.8 h1:lD+NLqFcAi1ovnVZpsnObHGW4xb4J8lNmoYVfECH1Y0=
 github.com/go-chi/chi/v5 v5.0.8/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
