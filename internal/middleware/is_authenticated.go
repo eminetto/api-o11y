@@ -53,7 +53,7 @@ func Handler(ctx context.Context, telemetry telemetry.Telemetry) func(next http.
 				respondWithError(rw, http.StatusUnauthorized, err.Error(), errorMessage)
 				return
 			}
-			newCTX := context.WithValue(ctx, "email", res.Email)
+			newCTX := context.WithValue(r.Context(), "email", res.Email)
 			next.ServeHTTP(rw, r.WithContext(newCTX))
 		}
 		return http.HandlerFunc(fn)
