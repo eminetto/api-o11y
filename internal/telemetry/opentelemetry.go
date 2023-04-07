@@ -3,13 +3,13 @@ package telemetry
 import (
 	"context"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 	"go.opentelemetry.io/otel/trace"
+	"os"
 )
 
 type Telemetry interface {
@@ -68,8 +68,11 @@ func createTraceProvider(ctx context.Context, serviceName string) (*sdktrace.Tra
 		return nil, err
 	}
 
-	client := otlptracehttp.NewClient()
-	exp, err := otlptrace.New(ctx, client)
+	exp, err :=
+		otlptracegrpc.New(ctx,
+			otlptracegrpc.WithInsecure(),
+			otlptracegrpc.WithEndpoint(os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")),
+		)
 	if err != nil {
 		return nil, err
 	}

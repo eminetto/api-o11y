@@ -61,6 +61,7 @@ func storeFeedback(fService feedback.UseCase) http.HandlerFunc {
 			return
 		}
 		defer otel.Shutdown(ctx)
+		fmt.Println(otel)
 		ctx, span := otel.Start(ctx, "store")
 		defer span.End()
 		var f feedback.Feedback
