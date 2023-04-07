@@ -19,7 +19,7 @@ func IsAuthenticated(ctx context.Context, telemetry telemetry.Telemetry) func(ne
 func Handler(ctx context.Context, telemetry telemetry.Telemetry) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(rw http.ResponseWriter, r *http.Request) {
-			ctx, span := telemetry.Start(ctx, "IsAuthenticated")
+			_, span := telemetry.Start(ctx, "IsAuthenticated")
 			defer span.End()
 			errorMessage := "Erro na autenticação"
 			tokenString := r.Header.Get("Authorization")
