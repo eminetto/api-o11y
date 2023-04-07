@@ -1,17 +1,19 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/eminetto/api-o11y/internal/middleware"
+	"github.com/eminetto/api-o11y/internal/telemetry"
 	"github.com/eminetto/api-o11y/votes/vote"
 	"github.com/eminetto/api-o11y/votes/vote/mysql"
 	"github.com/go-chi/chi/v5"
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httplog"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/codes"
 	"net/http"
 	"os"
 	"time"
@@ -19,7 +21,7 @@ import (
 
 func main() {
 	// Logger
-	logger := httplog.NewLogger("auth", httplog.Options{
+	logger := httplog.NewLogger("votes", httplog.Options{
 		JSON: true,
 	})
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE"))
@@ -28,14 +30,22 @@ func main() {
 		logger.Panic().Msg(err.Error())
 	}
 	defer db.Close()
-	repo := mysql.NewVoteMySQL(db)
 
-	vService := vote.NewService(repo)
+	ctx := context.Background()
+	otel, err := telemetry.New(ctx, "votes")
+	if err != nil {
+		logger.Panic().Msg(err.Error())
+	}
+	defer otel.Shutdown(ctx)
+
+	repo := mysql.NewVoteMySQL(db, otel)
+
+	vService := vote.NewService(repo, otel)
 
 	r := chi.NewRouter()
-	r.Use(chimiddleware.Logger)
+	r.Use(httplog.RequestLogger(logger))
 	r.Use(middleware.IsAuthenticated)
-	r.Post("/v1/vote", storeVote(vService))
+	r.Post("/v1/vote", storeVote(ctx, vService, otel))
 
 	http.Handle("/", r)
 	srv := &http.Server{
@@ -50,9 +60,11 @@ func main() {
 	}
 }
 
-func storeVote(vService vote.UseCase) http.HandlerFunc {
+func storeVote(ctx context.Context, vService vote.UseCase, otel telemetry.Telemetry) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		oplog := httplog.LogEntry(r.Context())
+		ctx, span := otel.Start(ctx, "store")
+		defer span.End()
 		var v vote.Vote
 		err := json.NewDecoder(r.Body).Decode(&v)
 		if err != nil {
@@ -64,15 +76,19 @@ func storeVote(vService vote.UseCase) http.HandlerFunc {
 		var result struct {
 			ID uuid.UUID `json:"id"`
 		}
-		result.ID, err = vService.Store(r.Context(), &v)
+		result.ID, err = vService.Store(ctx, &v)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			oplog.Error().Msg(err.Error())
+			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
 			return
 		}
 		if err := json.NewEncoder(w).Encode(result); err != nil {
 			w.WriteHeader(http.StatusBadGateway)
 			oplog.Error().Msg(err.Error())
+			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
 			return
 		}
 		return
