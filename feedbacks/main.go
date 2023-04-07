@@ -54,7 +54,7 @@ func main() {
 	}
 	err = srv.ListenAndServe()
 	if err != nil {
-		panic(err)
+		logger.Panic().Msg(err.Error())
 	}
 }
 

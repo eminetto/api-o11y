@@ -56,7 +56,7 @@ func main() {
 	}
 	err = srv.ListenAndServe()
 	if err != nil {
-		panic(err)
+		logger.Panic().Msg(err.Error())
 	}
 }
 
@@ -70,6 +70,8 @@ func storeVote(ctx context.Context, vService vote.UseCase, otel telemetry.Teleme
 		if err != nil {
 			w.WriteHeader(http.StatusBadGateway)
 			oplog.Error().Msg(err.Error())
+			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
 			return
 		}
 		v.Email = r.Context().Value("email").(string)
