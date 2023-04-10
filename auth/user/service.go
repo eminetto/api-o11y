@@ -38,10 +38,10 @@ func (s *Service) ValidateUser(ctx context.Context, email, password string) erro
 		span.SetStatus(codes.Error, err.Error())
 		return err
 	}
-	return s.validatePassword(ctx, u, password)
+	return s.ValidatePassword(ctx, u, password)
 }
 
-func (s *Service) validatePassword(ctx context.Context, u *User, password string) error {
+func (s *Service) ValidatePassword(ctx context.Context, u *User, password string) error {
 	ctx, span := s.telemetry.Start(ctx, "validatePassword")
 	defer span.End()
 	h := sha1.New()
