@@ -35,6 +35,20 @@ build-feedbacks-docker: build-feedbacks-linux
 build-votes-docker: build-votes-linux
 	cd votes; docker build -t votes -f Dockerfile .
 
+generate-mocks:
+	@cd auth ; mockery --output user/mocks --dir user --all
+	@cd internal ; mockery --output telemetry/mocks --dir telemetry --all
+
+clean:
+	@rm -rf auth/user/mocks/*
+	@rm -rf internal/telemetry/mocks/mocks/*
+
+test: generate-mocks
+	go test ./...
+	cd auth ; go test ./...
+	cd feedbacks; go test ./...
+	cd votes; go test ./...
+
 run-docker: build-auth-docker build-feedbacks-docker build-votes-docker
     docker run -d -p 8081:8081 auth
     docker run -d -p 8082:8082 feedbacks

@@ -1,11 +1,15 @@
 package user
 
 import (
+	"github.com/eminetto/api-o11y/auth/user/mocks"
+	tmocks "github.com/eminetto/api-o11y/internal/telemetry/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestValidatePassword(t *testing.T) {
+	repo := mocks.NewRepository(t)
+	otel := tmocks.New
 	u := &User{
 		Email:    "eminetto@email.com",
 		Password: "8cb2237d0679ca88db6464eac60da96345513964",
