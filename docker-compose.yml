@@ -66,6 +66,7 @@ services:
     container_name: auth
     depends_on:
       - mysql-auth
+      - otelcol
   feedbacks:
     image: feedbacks
     build:
@@ -85,6 +86,7 @@ services:
     container_name: feedbacks
     depends_on:
       - mysql-feedbacks
+      - otelcol
   votes:
     image: votes
     build:
@@ -104,6 +106,7 @@ services:
     container_name: votes
     depends_on:
       - mysql-votes
+      - otelcol
 
   # ********************
   # Telemetry Components
