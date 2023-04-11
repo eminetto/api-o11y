@@ -36,8 +36,8 @@ func main() {
 		logger.Panic().Msg(err.Error())
 	}
 	defer otel.Shutdown(ctx)
-	repo := mysql.NewUserMySQL(db, otel)
 
+	repo := mysql.NewUserMySQL(db, otel)
 	fService := feedback.NewService(repo, otel)
 
 	r := chi.NewRouter()
@@ -54,7 +54,7 @@ func main() {
 	}
 	err = srv.ListenAndServe()
 	if err != nil {
-		panic(err)
+		logger.Panic().Msg(err.Error())
 	}
 }
 
