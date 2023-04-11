@@ -54,8 +54,6 @@ github.com/cncf/xds/go v0.0.0-20211011173535-cb28da3451f1/go.mod h1:eXthEFrGJvWH
 github.com/coreos/go-systemd/v22 v22.3.3-0.20220203105225-a9a7ef127534/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
-github.com/eminetto/api-o11y v0.0.9 h1:QFnLN6knmXX/ejJ5N80BaJmSQhg7h8pzuKafb0UH0C0=
-github.com/eminetto/api-o11y v0.0.9/go.mod h1:hPKUkRKkl/cuHHsA0mZ6rdJny7o5KiG9dteD8EuFr6g=
 github.com/eminetto/api-o11y v0.0.10 h1:uifDhzR4fPvoz4j99sN0Y1/CItw2q+IihUW38ucn+qY=
 github.com/eminetto/api-o11y v0.0.10/go.mod h1:j1g6NMcA7FqcF+LMak1IbRnI9aElWyyRJcBvaHbLcXY=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
