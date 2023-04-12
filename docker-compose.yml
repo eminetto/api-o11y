@@ -60,11 +60,13 @@ services:
       DB_DATABASE: "auth_db"
       DB_PORT: "3306"
       PORT: "8081"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT}"
     ports:
       - "8081:8081"
     container_name: auth
     depends_on:
       - mysql-auth
+      - otelcol
   feedbacks:
     image: feedbacks
     build:
@@ -78,11 +80,13 @@ services:
       DB_PORT: "3306"
       PORT: "8082"
       AUTH_URL: "http://auth:8081"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT}"
     ports:
       - "8082:8082"
     container_name: feedbacks
     depends_on:
       - mysql-feedbacks
+      - otelcol
   votes:
     image: votes
     build:
@@ -96,11 +100,13 @@ services:
       DB_PORT: "3306"
       PORT: "8083"
       AUTH_URL: "http://auth:8081"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT}"
     ports:
       - "8083:8083"
     container_name: votes
     depends_on:
       - mysql-votes
+      - otelcol
 
   # ********************
   # Telemetry Components
@@ -110,6 +116,7 @@ services:
     image: jaegertracing/all-in-one
     container_name: jaeger
     command:
+      - "--log-level=debug"
       - "--memory.max-traces"
       - "10000"
       - "--query.base-path"
@@ -122,7 +129,10 @@ services:
           memory: 300M
     restart: unless-stopped
     ports:
-      - "${JAEGER_SERVICE_PORT}"                    # Jaeger UI
+#      - "${JAEGER_SERVICE_PORT}"                    # Jaeger UI
+      - "16686:16686"
+      - "14250:14250"
+      - "14268:14268" # Jaeger collector
       - "4317"                           # OTLP gRPC default port
     environment:
       - COLLECTOR_OTLP_ENABLED=true
