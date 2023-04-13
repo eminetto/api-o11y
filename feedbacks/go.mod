@@ -3,7 +3,7 @@ module github.com/eminetto/api-o11y/feedbacks
 go 1.20
 
 require (
-	github.com/eminetto/api-o11y v0.0.10
+	github.com/eminetto/api-o11y v0.0.11
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/httplog v0.3.0
 	github.com/go-sql-driver/mysql v1.7.0
