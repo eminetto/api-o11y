@@ -11,6 +11,7 @@ import (
 	"github.com/eminetto/api-o11y/internal/telemetry"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog"
+	telemetrymiddleware "github.com/go-chi/telemetry"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/codes"
@@ -42,6 +43,9 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(httplog.RequestLogger(logger))
+	r.Use(telemetrymiddleware.Collector(telemetrymiddleware.Config{
+		AllowAny: true,
+	}, []string{"/v1"})) // path prefix filters basically records generic http request metrics
 	r.Use(middleware.IsAuthenticated(ctx, otel))
 	r.Post("/v1/feedback", storeFeedback(ctx, fService, otel))
 
