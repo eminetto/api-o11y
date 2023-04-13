@@ -16,6 +16,7 @@ import (
 
 	"context"
 	"github.com/go-chi/chi/v5"
+	telemetrymiddleware "github.com/go-chi/telemetry"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -44,6 +45,9 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(httplog.RequestLogger(logger))
+	r.Use(telemetrymiddleware.Collector(telemetrymiddleware.Config{
+		AllowAny: true,
+	}, []string{"/v1"})) // path prefix filters basically records generic http request metrics
 	r.Post("/v1/auth", userAuth(ctx, uService, otel))
 	r.Post("/v1/validate-token", validateToken(ctx, otel))
 

@@ -129,8 +129,7 @@ services:
           memory: 300M
     restart: unless-stopped
     ports:
-#      - "${JAEGER_SERVICE_PORT}"                    # Jaeger UI
-      - "16686:16686"
+      - "${JAEGER_SERVICE_PORT}:${JAEGER_SERVICE_PORT}"                    # Jaeger UI
       - "14250:14250"
       - "14268:14268" # Jaeger collector
       - "4317"                           # OTLP gRPC default port
@@ -143,15 +142,10 @@ services:
   grafana:
     image: grafana/grafana:9.1.0
     container_name: grafana
-    deploy:
-      resources:
-        limits:
-          memory: 75M
-    volumes:
-      - ./ops/grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./ops/grafana/provisioning/:/etc/grafana/provisioning/
     ports:
-      - "${GRAFANA_SERVICE_PORT}"
+      - "${GRAFANA_SERVICE_PORT}:${GRAFANA_SERVICE_PORT}"
+    depends_on:
+      - prometheus
     logging: *logging
 
   # OpenTelemetry Collector
