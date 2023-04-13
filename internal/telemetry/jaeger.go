@@ -3,7 +3,7 @@ package telemetry
 import (
 	"context"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -12,15 +12,15 @@ import (
 	"os"
 )
 
-type OTel struct {
+type Jaeger struct {
 	provider *sdktrace.TracerProvider
 	tracer   trace.Tracer
 }
 
-func New(ctx context.Context, serviceName string) (*OTel, error) {
+func NewJaeger(ctx context.Context, serviceName string) (*Jaeger, error) {
 	var tp *sdktrace.TracerProvider
 	var err error
-	tp, err = createOtelTraceProvider(ctx, serviceName)
+	tp, err = createJaegerTraceProvider(ctx, serviceName)
 	if err != nil {
 		return nil, err
 	}
@@ -28,24 +28,24 @@ func New(ctx context.Context, serviceName string) (*OTel, error) {
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 	tracer := tp.Tracer(serviceName)
 
-	return &OTel{
+	return &Jaeger{
 		provider: tp,
 		tracer:   tracer,
 	}, nil
 }
 
-func (ot *OTel) Start(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, Span) {
+func (ot *Jaeger) Start(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, Span) {
 	if len(opts) == 0 {
 		return ot.tracer.Start(ctx, name)
 	}
 	return ot.tracer.Start(ctx, name, opts[0])
 }
 
-func (ot *OTel) Shutdown(ctx context.Context) {
+func (ot *Jaeger) Shutdown(ctx context.Context) {
 	ot.provider.Shutdown(ctx)
 }
 
-func createOtelTraceProvider(ctx context.Context, serviceName string) (*sdktrace.TracerProvider, error) {
+func createJaegerTraceProvider(ctx context.Context, serviceName string) (*sdktrace.TracerProvider, error) {
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
 			semconv.ServiceNameKey.String(serviceName),
@@ -55,11 +55,11 @@ func createOtelTraceProvider(ctx context.Context, serviceName string) (*sdktrace
 		return nil, err
 	}
 
-	exp, err :=
-		otlptracegrpc.New(ctx,
-			otlptracegrpc.WithInsecure(),
-			otlptracegrpc.WithEndpoint(os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")),
-		)
+	exp, err := jaeger.New(
+		jaeger.WithCollectorEndpoint(
+			jaeger.WithEndpoint(os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")),
+		),
+	)
 	if err != nil {
 		return nil, err
 	}
