@@ -1,5 +1,11 @@
 # API Observability
 
+### Building
+
+```
+docker compose up -d --build
+```
+
 ## Using the services
 
 ### Auth

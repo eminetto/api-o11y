@@ -34,7 +34,7 @@ func main() {
 	defer db.Close()
 
 	ctx := context.Background()
-	otel, err := telemetry.New(ctx, "auth")
+	otel, err := telemetry.NewJaeger(ctx, "auth")
 	if err != nil {
 		logger.Panic().Msg(err.Error())
 	}
