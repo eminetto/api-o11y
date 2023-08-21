@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/eminetto/api-o11y v0.0.11
+	github.com/eminetto/api-o11y v0.0.12
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/httplog v0.3.0
 	github.com/go-chi/telemetry v0.2.0

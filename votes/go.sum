@@ -59,6 +59,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/eminetto/api-o11y v0.0.11 h1:PbFfGp1Cy7QaR55OBsTE1kovkJw+CT7ZBPeICfiPjIw=
 github.com/eminetto/api-o11y v0.0.11/go.mod h1:BVyINe/YXuOod6cx9t46GBxnZ5ugi+oGHC59sMThk7Y=
+github.com/eminetto/api-o11y v0.0.12 h1:Ek/ycnazLv66Qlj8/LoeDeNG1/ljXwq+DhjMcHXOzG4=
+github.com/eminetto/api-o11y v0.0.12/go.mod h1:BVyINe/YXuOod6cx9t46GBxnZ5ugi+oGHC59sMThk7Y=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=

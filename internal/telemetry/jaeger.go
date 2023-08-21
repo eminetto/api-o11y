@@ -57,7 +57,7 @@ func createJaegerTraceProvider(ctx context.Context, serviceName string) (*sdktra
 
 	exp, err := jaeger.New(
 		jaeger.WithCollectorEndpoint(
-			jaeger.WithEndpoint(os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")),
+			jaeger.WithEndpoint(os.Getenv("JAEGER_SERVICE_HOST") + ":" + os.Getenv("JAEGER_SERVICE_PORT")),
 		),
 	)
 	if err != nil {
