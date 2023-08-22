@@ -61,6 +61,8 @@ github.com/eminetto/api-o11y v0.0.11 h1:PbFfGp1Cy7QaR55OBsTE1kovkJw+CT7ZBPeICfiP
 github.com/eminetto/api-o11y v0.0.11/go.mod h1:BVyINe/YXuOod6cx9t46GBxnZ5ugi+oGHC59sMThk7Y=
 github.com/eminetto/api-o11y v0.0.12 h1:Ek/ycnazLv66Qlj8/LoeDeNG1/ljXwq+DhjMcHXOzG4=
 github.com/eminetto/api-o11y v0.0.12/go.mod h1:BVyINe/YXuOod6cx9t46GBxnZ5ugi+oGHC59sMThk7Y=
+github.com/eminetto/api-o11y v0.0.13 h1:ueo421MfT+0H5xrXyqXHz6zI4h0bR2enTRzorbGa+UM=
+github.com/eminetto/api-o11y v0.0.13/go.mod h1:BVyINe/YXuOod6cx9t46GBxnZ5ugi+oGHC59sMThk7Y=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=

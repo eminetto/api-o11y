@@ -61,6 +61,7 @@ services:
       DB_PORT: "3306"
       PORT: "8081"
       OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT}"
+      JAEGER_TRACEPROVIDER: "${JAEGER_TRACEPROVIDER}"
     ports:
       - "8081:8081"
     container_name: auth
@@ -81,6 +82,7 @@ services:
       PORT: "8082"
       AUTH_URL: "http://auth:8081"
       OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT}"
+      JAEGER_TRACEPROVIDER: "${JAEGER_TRACEPROVIDER}"
     ports:
       - "8082:8082"
     container_name: feedbacks
@@ -101,6 +103,7 @@ services:
       PORT: "8083"
       AUTH_URL: "http://auth:8081"
       OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT}"
+      JAEGER_TRACEPROVIDER: "${JAEGER_TRACEPROVIDER}"
     ports:
       - "8083:8083"
     container_name: votes

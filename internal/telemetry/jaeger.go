@@ -57,7 +57,7 @@ func createJaegerTraceProvider(ctx context.Context, serviceName string) (*sdktra
 
 	exp, err := jaeger.New(
 		jaeger.WithCollectorEndpoint(
-			jaeger.WithEndpoint(os.Getenv("JAEGER_SERVICE_HOST") + ":" + os.Getenv("JAEGER_SERVICE_PORT")),
+			jaeger.WithEndpoint(os.Getenv("JAEGER_TRACEPROVIDER")),
 		),
 	)
 	if err != nil {
