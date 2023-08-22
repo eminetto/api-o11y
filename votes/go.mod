@@ -3,7 +3,7 @@ module github.com/eminetto/api-o11y/votes
 go 1.20
 
 require (
-	github.com/eminetto/api-o11y v0.0.13
+	github.com/eminetto/api-o11y v0.0.14
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/httplog v0.3.0
 	github.com/go-chi/telemetry v0.2.0
